@@ -1,0 +1,22 @@
+age is a shell script to show duration or age of files in human readable
+text.
+
+Examples:
+
+1. When did I installed chrome?
+
+	$ age chrome
+	/usr/local/bin/chrome: 1 day 20 hours 35 minutes 26 seconds
+	
+2. How long is it since epoch?
+
+	$ date 
+	Wed Jan 27 10:46:07 MYT 2010
+
+	$ age -s 0
+	40 years 36 days 2 hours 46 minutes 7 seconds
+
+3. Is true that there's 3153600 seconds in one non-leap year?
+
+	$ age -d 31536000
+	1 year

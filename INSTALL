@@ -1,0 +1,11 @@
+To install type
+
+	make install
+
+Default installation is in /usr/local/bin
+
+Set PREFIX if you want it somewhere else:
+
+	make PREFIX=$HOME install
+
+This will install age in $HOME/bin.

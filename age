@@ -1,0 +1,147 @@
+#!/bin/sh
+# age - Show age of files
+
+me=`basename $0`
+SECONDS_PER_MINUTE=60
+SECONDS_PER_HOUR=3600
+SECONDS_PER_DAY=86400
+SECONDS_PER_YEAR=31536000
+	
+usage() {
+cat << EOF
+SYNOPSIS
+	age [-fh] file ...
+
+DESCRIPTION
+	age shows the age of the given programs. For each argument age locates the
+	program executable using which(1), and then calculates the age in days,
+	hours, minutes and seconds. Fields where the values are zero are not shown.
+
+	For executables age dereferences symbolic links by default. This makes it
+	simple to find out how old a program has been installed on the system.
+
+	To show the age of symbolic links use the -f option instead and specify the
+	fullpath to the symbolic link.
+
+OPTIONS
+	-h
+		Show this help message
+
+	-f
+		Do not locate the executable. Assume that the files are relative path
+		to the current directory
+
+	-s <since>
+		Show age since <since> seconds from epoch
+	
+	-d <delta>
+		Show age for the given <delta>seconds
+	
+	-n
+		Suppress file fullpath output
+
+AUTHOR
+	Written by Nazri Ramliy (C) 2009, 2010
+
+LICENSE
+	Public domain.
+EOF
+}
+
+action=file
+find_bin=1
+while getopts hfsdn opt
+do
+	case "$opt" in
+	f)
+		find_bin=0
+		;;
+	s)
+		action=since
+		;;
+	d)
+		action=delta
+		;;
+	n)
+		hide_filename=t
+		;;
+	h)
+		usage
+	 	exit;;
+	\?) exit;;
+	esac
+done
+shift $(($OPTIND -1))
+
+
+get_age() {
+	since=$1
+	if [ "x$2" = "xdelta" ]; then
+		delta=$1
+	else
+		now=`date +%s`
+		delta=$(( $now - $since ))
+	fi
+	
+	if [ $delta -eq 0 ]; then
+	    echo "0 seconds"
+	    return
+	fi
+	years=$(( $delta / $SECONDS_PER_YEAR ))
+	delta=$(( $delta % $SECONDS_PER_YEAR ))
+
+	days=$(( $delta / $SECONDS_PER_DAY   ))
+	delta=$(( $delta % $SECONDS_PER_DAY ))
+
+	hours=$(( $delta / $SECONDS_PER_HOUR  ))
+	delta=$(( $delta % $SECONDS_PER_HOUR   ))
+
+	minutes=$(( $delta / $SECONDS_PER_MINUTE))
+	delta=$(( $delta % $SECONDS_PER_MINUTE ))
+
+	seconds=$delta
+	
+	[ $years   -gt 0 ] && out="$years year"          &&
+	[ $years   -gt 1 ] && out="${out}s"
+	[ $days    -gt 0 ] && out="$out $days day"       &&
+	[ $days    -gt 1 ] && out="${out}s"
+	[ $hours   -gt 0 ] && out="$out $hours hour"     &&
+	[ $hours   -gt 1 ] && out="${out}s"
+	[ $minutes -gt 0 ] && out="$out $minutes minute" &&
+	[ $minutes -gt 1 ] && out="${out}s"
+	[ $seconds -gt 0 ] && out="$out $seconds second" &&
+	[ $seconds -gt 1 ] && out="${out}s"
+
+	out=`echo $out|sed -e 's/^ *//'`
+	echo $out
+}
+
+do_file() {
+[ -z "$1" ] && usage && exit
+
+for file in $*; do
+	if [ $find_bin -eq 1 ]; then
+		exe=`which 2>/dev/null $file`
+		[ $? -ne 0 ] && echo "$me: $file: No such executable" && exit 1
+		file=$exe
+		since=`stat -L --format '%Y' $file`
+	else
+		[ ! -e $file ] && echo "$me: $file: No such file" && exit 1
+		since=`stat --format '%Y' $file`
+	fi
+
+	[ -z "$hide_filename" ] && printf "$file: "
+	get_age $since
+done
+}
+
+if [ "x$action" = "xfile" ]; then
+	do_file $*
+elif [ "x$action" = "xsince" ]; then
+	get_age $*
+elif [ "x$action" = "xdelta" ]; then
+	get_age $* delta
+else
+	echo Unsupported Action
+	exit 1
+fi

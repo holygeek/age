@@ -40,6 +40,9 @@ OPTIONS
 	-n
 		Suppress file fullpath output
 
+BUGS
+	age does not know about the existence of leap year.
+
 AUTHOR
 	Written by Nazri Ramliy (C) 2009, 2010
 

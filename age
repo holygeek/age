@@ -143,5 +143,4 @@ elif [ "x$action" = "xdelta" ]; then
 	get_age $* delta
 else
 	echo Unsupported Action
-	exit 1
 fi

@@ -135,6 +135,7 @@ for file in $*; do
 
 	[ -z "$hide_filename" ] && printf "$file: "
 	get_age $since
+	out=
 done
 }
 

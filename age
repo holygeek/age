@@ -27,6 +27,15 @@ OPTIONS
 	-h
 		Show this help message
 
+	-c
+		Compact format - show "5m 3s" instead of "5 minutes 3 seconds".
+		Abbreviations:
+
+			days      => d
+			hours     => h
+			minutes   => m
+			seconds   => s
+
 	-f
 		Do not locate the executable. Assume that the files are relative path
 		to the current directory
@@ -52,10 +61,14 @@ EOF
 }
 
 action=file
+abbr=
 find_bin=1
-while getopts hfsdn opt
+while getopts chfsdn opt
 do
 	case "$opt" in
+	c)
+		abbr=t
+		;;
 	f)
 		find_bin=0
 		;;
@@ -90,6 +103,21 @@ get_age() {
 	    echo "0 seconds"
 	    return
 	fi
+
+	if [ -n "$abbr" ]; then
+		year_text=y
+		day_text=d
+		hour_text=h
+		minute_text=m
+		second_text=s
+	else
+		year_text=" year"
+		day_text=" day"
+		hour_text=" hour"
+		minute_text=" minute"
+		second_text=" second"
+	fi
+
 	years=$(( $delta / $SECONDS_PER_YEAR ))
 	delta=$(( $delta % $SECONDS_PER_YEAR ))
 
@@ -104,16 +132,16 @@ get_age() {
 
 	seconds=$delta
 	
-	[ $years   -gt 0 ] && out="$years year"          &&
-	[ $years   -gt 1 ] && out="${out}s"
-	[ $days    -gt 0 ] && out="$out $days day"       &&
-	[ $days    -gt 1 ] && out="${out}s"
-	[ $hours   -gt 0 ] && out="$out $hours hour"     &&
-	[ $hours   -gt 1 ] && out="${out}s"
-	[ $minutes -gt 0 ] && out="$out $minutes minute" &&
-	[ $minutes -gt 1 ] && out="${out}s"
-	[ $seconds -gt 0 ] && out="$out $seconds second" &&
-	[ $seconds -gt 1 ] && out="${out}s"
+	[ $years   -gt 0 ] && out="$years$year_text"          &&
+	[ $years   -gt 1 -a -z "$abbr" ] && out="${out}s"
+	[ $days    -gt 0 ] && out="$out $days$day_text"       &&
+	[ $days    -gt 1 -a -z "$abbr" ] && out="${out}s"
+	[ $hours   -gt 0 ] && out="$out $hours$hour_text"     &&
+	[ $hours   -gt 1 -a -z "$abbr" ] && out="${out}s"
+	[ $minutes -gt 0 ] && out="$out $minutes$minute_text" &&
+	[ $minutes -gt 1 -a -z "$abbr" ] && out="${out}s"
+	[ $seconds -gt 0 ] && out="$out $seconds$second_text" &&
+	[ $seconds -gt 1 -a -z "$abbr" ] && out="${out}s"
 
 	out=`echo $out|sed -e 's/^ *//'`
 	echo $out

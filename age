@@ -100,7 +100,7 @@ get_age() {
 	fi
 	
 	if [ $delta -eq 0 ]; then
-	    echo "0 seconds"
+	    test -n "$abbr" && echo "0s" || echo "0 seconds"
 	    return
 	fi
 

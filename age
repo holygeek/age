@@ -41,8 +41,11 @@ OPTIONS
 		to the current directory
 
 	-s <since>
-		Show age since <since> seconds from epoch
-	
+		Show age since <since> seconds from epoch.
+		If <since> is greater than now, a "-" is
+		prepended to the output to indicate that it
+		is in the future.
+
 	-d <delta>
 		Show age for the given <delta>seconds
 	
@@ -97,6 +100,11 @@ get_age() {
 	else
 		now=`date +%s`
 		delta=$(( $now - $since ))
+		if [ $delta -lt 0 ]; then
+			# Make it positive
+			delta=${delta#-}
+			echo -n -
+		fi
 	fi
 	
 	if [ $delta -eq 0 ]; then

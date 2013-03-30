@@ -14,6 +14,7 @@ func main() {
 	var noPath bool
 	var since int64
 	var delta int64
+	var compact bool
 
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, os.Args[0] + " [-h] [-f|-s|-d] [-n] <arg>")
@@ -23,7 +24,14 @@ func main() {
 	flag.BoolVar(&noPath, "n", false, "Suppress file fullpath output")
 	flag.Int64Var(&delta, "d", -1, "Show age for the given seconds")
 	flag.Int64Var(&since, "s", -1, "Show age since the given seconds from epoch")
+	flag.BoolVar(&compact, "c", false, "Show age in compact format (3m 1s)")
 	flag.Parse()
+
+	getDuration := timetext.LongDuration
+	if compact {
+		getDuration = timetext.Duration
+	}
+
 
 	var age int64
 	if since >= 0 {
@@ -56,7 +64,7 @@ func main() {
 				if ! noPath {
 					fmt.Print(filename + ": ")
 				}
-				fmt.Println(timetext.Duration(age))
+				fmt.Println(getDuration(age))
 			} else {
 				fmt.Fprintln(os.Stderr, err)
 				return
@@ -64,5 +72,5 @@ func main() {
 		}
 		return
 	}
-	fmt.Println(timetext.Duration(age))
+	fmt.Println(getDuration(age))
 }

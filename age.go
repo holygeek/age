@@ -15,6 +15,7 @@ func main() {
 	var since int64
 	var delta int64
 	var compact bool
+	var terse bool
 
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, os.Args[0] + " [-h] [-f|-s|-d] [-n] <arg>")
@@ -25,13 +26,19 @@ func main() {
 	flag.Int64Var(&delta, "d", -1, "Show age for the given seconds")
 	flag.Int64Var(&since, "s", -1, "Show age since the given seconds from epoch")
 	flag.BoolVar(&compact, "c", false, "Show age in compact format (3m 1s)")
+	flag.BoolVar(&terse, "t", false, "Terse output - 3m 0s is shown as only 3m")
 	flag.Parse()
 
 	getDuration := timetext.LongDuration
+	if terse {
+		getDuration = timetext.TerseLongDuration
+	}
 	if compact {
 		getDuration = timetext.Duration
+		if terse {
+			getDuration = timetext.TerseDuration
+		}
 	}
-
 
 	var age int64
 	if since >= 0 {

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"os"
-	"fmt"
 	"flag"
-	"time"
-	"os/exec"
+	"fmt"
 	"github.com/holygeek/timetext"
+	"os"
+	"os/exec"
+	"time"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	var terse bool
 
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, os.Args[0] + " [-h] [-f|-s|-d] [-n] <arg>")
+		fmt.Fprintln(os.Stderr, os.Args[0]+" [-h] [-f|-s|-d] [-n] <arg>")
 		flag.PrintDefaults()
 	}
 	flag.BoolVar(&file, "f", false, "Show age of given file")
@@ -62,13 +62,13 @@ func main() {
 					fmt.Fprintln(os.Stderr, err)
 					return
 				} else {
-					filename = string(output[0:len(output) - 1])
+					filename = string(output[0 : len(output)-1])
 				}
 			}
 
 			if fi, err := os.Stat(filename); err == nil {
 				age = time.Now().Unix() - fi.ModTime().Unix()
-				if ! noPath {
+				if !noPath {
 					fmt.Print(filename + ": ")
 				}
 				fmt.Println(getDuration(age))

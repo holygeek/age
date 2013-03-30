@@ -1,5 +1,4 @@
-age is a shell script to show the duration or age of files in human readable
-text.
+age shows a duration or age of files in human readable text.
 
 Examples:
 
@@ -16,7 +15,7 @@ Examples:
 	$ age -s 0
 	40 years 36 days 2 hours 46 minutes 7 seconds
 
-3. Is it true that there are 3153600 seconds in one non-leap year?
+3. Is it true that there are 31536000 seconds in one non-leap year?
 
-	$ age -d 31536000
+	$ age -t -d 31536000
 	1 year

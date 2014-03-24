@@ -59,7 +59,7 @@ func main() {
 				exe := arg
 				cmd := exec.Command("which", exe)
 				if output, err := cmd.Output(); err != nil {
-					fmt.Fprintln(os.Stderr, err)
+					fmt.Fprintf(os.Stderr, "%s: No %s executable?\n", err, exe)
 					return
 				} else {
 					filename = string(output[0 : len(output)-1])

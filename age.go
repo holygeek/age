@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/holygeek/timetext"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
+
+	"github.com/holygeek/timetext"
 )
 
 func main() {
@@ -53,7 +55,7 @@ func main() {
 
 		for _, arg := range flag.Args() {
 			var filename string
-			if file {
+			if file || filepath.IsAbs(arg) {
 				filename = arg
 			} else {
 				exe := arg
